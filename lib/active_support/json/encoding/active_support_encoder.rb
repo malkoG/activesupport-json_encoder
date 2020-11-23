@@ -23,7 +23,8 @@ module ActiveSupport
             jsonified.respond_to?(:encode_json) ? jsonified.encode_json(self) : encode(jsonified, false)
           end
         end
-
+        
+        def as_json(value, use_options = true)	
         # like encode, but only calls as_json, without encoding to string.
           check_for_circular_references(value) do
             use_options ? value.as_json(options_for(value)) : value.as_json
