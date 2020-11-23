@@ -25,7 +25,6 @@ module ActiveSupport
         end
 
         # like encode, but only calls as_json, without encoding to string.
-        def as_json(value, use_options = true)
           check_for_circular_references(value) do
             use_options ? value.as_json(options_for(value)) : value.as_json
           end
@@ -90,16 +89,6 @@ module ActiveSupport
             @seen.delete(value.__id__)
           end
       end
-
-      class << self
-        remove_method :encode_big_decimal_as_string, :encode_big_decimal_as_string=
-
-        # If false, serializes BigDecimal objects as numeric instead of wrapping
-        # them in a string.
-        attr_accessor :encode_big_decimal_as_string
-      end
-
-      self.encode_big_decimal_as_string = true
     end
   end
 end
@@ -144,15 +133,12 @@ class BigDecimal
   # if the other end knows by contract that the data is supposed to be a
   # BigDecimal, it still has the chance to post-process the string and get the
   # real value.
-  #
-  # Use <tt>ActiveSupport.encode_big_decimal_as_string = true</tt> to
-  # override this behavior.
-
+  
   remove_method :as_json
 
   def as_json(options = nil) #:nodoc:
     if finite?
-      ActiveSupport.encode_big_decimal_as_string ? to_s : self
+      to_s
     else
       nil
     end
